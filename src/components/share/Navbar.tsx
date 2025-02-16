@@ -1,4 +1,4 @@
-
+"use client"
 
 import { Button } from "../ui/button";
 import { Heart, LogOut, ShoppingBag } from "lucide-react";
@@ -13,10 +13,32 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { logout } from "@/services/AuthService";
+import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
+import { usePathname, useRouter } from "next/navigation";
+import { protectedRoutes } from "@/constants";
 
 
 
 export default function Navbar() {
+
+    const { user, setIsLoading } = useUser()
+    const pathname = usePathname()
+    const router = useRouter()
+
+    const handleLogout = () => {
+        logout()
+
+        toast.success("logout success")
+        setIsLoading(true)
+        if (protectedRoutes.some(route=>pathname.match(route))){
+            router.push('/')
+        }
+        
+    }
+
+
     return (
         <header className="border-b w-full">
             <div className="container flex justify-between items-center mx-auto h-16 px-3">
@@ -37,30 +59,36 @@ export default function Navbar() {
                     <Button variant="outline" className="rounded-full p-0 size-10">
                         <ShoppingBag />
                     </Button>
-                    <Link href={'/login'}><Button variant="outline" className="rounded-full px-7 ">login</Button></Link>
-                    <Link href={'/createShop'}> <Button variant="outline" className="rounded-full px-7  ">Create shop</Button></Link>
 
-                    {/*  */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger><Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>User</AvatarFallback>
-                        </Avatar></DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Profile</DropdownMenuItem>
-                            <DropdownMenuItem>Dashboard</DropdownMenuItem>
-                            <DropdownMenuItem>My Shop</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <LogOut></LogOut>
-                                <span>Log out</span>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
 
-                   
+                    {user ? <>
+                        <Link href={'/createShop'}> <Button className="rounded-full px-7  ">Create shop</Button></Link>
+
+                        {/*  */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger><Avatar>
+                                <AvatarImage src="https://github.com/shadcn.png" />
+                                <AvatarFallback>User</AvatarFallback>
+                            </Avatar></DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>Profile</DropdownMenuItem>
+                                <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                                <DropdownMenuItem>My Shop</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout} >
+                                    <LogOut></LogOut>
+                                    <span>Log out</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                    </> : <Link href={'/login'}><Button variant="outline" className="rounded-full px-7 ">login</Button></Link>}
+
+
+
+
                 </nav>
             </div>
         </header>

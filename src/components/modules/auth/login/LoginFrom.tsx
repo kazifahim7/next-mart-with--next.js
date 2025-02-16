@@ -20,13 +20,20 @@ import { toast } from "sonner";
 import { useState } from "react";
 import Logo from "@/app/assets/Logo";
 import { loginSchema } from "./loginValidation";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 export default function LoginForm() {
+    const {setReload}=useUser()
     const form = useForm({
         resolver: zodResolver(loginSchema),
     });
     const navigate=useRouter()
+   
+    const searchParams=useSearchParams()
+    const redirect = searchParams.get('redirectPath')
+    console.log(redirect)
+   
 
     const [reCaptchaStatus, setReCaptchaStatus] = useState(false);
 
@@ -39,6 +46,8 @@ export default function LoginForm() {
             const res = await reCaptchaTokenVerification(value!);
             if (res?.success) {
                 setReCaptchaStatus(true);
+                
+
             }
         } catch (err: any) {
             console.error(err);
@@ -50,7 +59,13 @@ export default function LoginForm() {
             const res = await loginUser(data);
             if (res?.success) {
                 toast.success(res?.message);
-                navigate.push('/')
+                setReload(true)
+                if(redirect){
+                    navigate.push(redirect)
+                }
+               else{
+                    navigate.push('/')
+               }
             } else {
                 toast.error(res?.message);
             }
