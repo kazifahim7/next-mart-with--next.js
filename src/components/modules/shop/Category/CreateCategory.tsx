@@ -28,6 +28,8 @@ import { toast } from "sonner";
 const CreateCategoryModal = () => {
     const [imageFiles, setImageFiles] = useState<File[] | []>([]);
     const [imagePreview, setImagePreview] = useState<string[] | []>([]);
+    const [isOpen,setOpen]=useState(false)
+
 
     const form = useForm();
     const {
@@ -45,6 +47,7 @@ const CreateCategoryModal = () => {
 
             if (res?.success) {
                 toast.success(res?.message);
+                setOpen(false)
             } else {
                 toast.error(res?.message);
             }
@@ -54,7 +57,7 @@ const CreateCategoryModal = () => {
     };
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button>Create Category</Button>
             </DialogTrigger>
