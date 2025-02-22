@@ -40,11 +40,12 @@ import { getAllCategories } from "@/services/category";
 import Logo from "@/app/assets/Logo";
 import { IBrand } from "@/types/brand";
 import { ICategory } from "@/types/category";
-import { addProduct } from "@/services/Product";
+import {  updateProduct } from "@/services/Product";
+import { IProduct } from "@/types/product";
 
-export default function AddProductsForm() {
+export default function UpdateProductForm({product}:{product:IProduct}) {
     const [imageFiles, setImageFiles] = useState<File[] | []>([]);
-    const [imagePreview, setImagePreview] = useState<string[] | []>([]);
+    const [imagePreview, setImagePreview] = useState<string[] | []>( product?.imageUrls||[]);
     const [categories, setCategories] = useState<ICategory[] | []>([]);
     const [brands, setBrands] = useState<IBrand[] | []>([]);
 
@@ -52,16 +53,22 @@ export default function AddProductsForm() {
 
     const form = useForm({
         defaultValues: {
-            name: "",
-            description: "",
-            price: "",
-            category: "",
-            brand: "",
-            stock: "",
-            weight: "",
-            availableColors: [{ value: "" }],
-            keyFeatures: [{ value: "" }],
-            specification: [{ key: "", value: "" }],
+            name: product?.name || "",
+            description: product?.description || "",
+            price: product?.price || '',
+            category: product?.category,
+            brand: product?.brand,
+            stock: product?.stock,
+            weight: product?.weight,
+            availableColors: product?.availableColors?.map((color) => ({
+                value: color,
+            })) || [{ value: "" }],
+            keyFeatures: product?.keyFeatures?.map((feature) => ({
+                value: feature,
+            })) || [{ value: "" }],
+            specification: Object.entries(product?.specification || {}).map(
+                ([key, value]) => ({ key, value })
+            ) || [{ key: "", value: "" }],
         },
     });
 
@@ -84,8 +91,8 @@ export default function AddProductsForm() {
     })
     console.log(featureFields)
 
-    const addFeature = ()=>{
-        appendFeature({value:""})
+    const addFeature = () => {
+        appendFeature({ value: "" })
     }
 
     const { append: appendSpec, fields: specFields } = useFieldArray({
@@ -147,7 +154,7 @@ export default function AddProductsForm() {
             formData.append("images", file);
         }
         try {
-            const res = await addProduct(formData);
+            const res = await updateProduct(formData,product._id);
 
             console.log(res)
 
@@ -167,7 +174,7 @@ export default function AddProductsForm() {
             <div className="flex items-center space-x-4 mb-5 ">
                 <Logo />
 
-                <h1 className="text-xl font-bold">Add Product</h1>
+                <h1 className="text-xl font-bold">Update Product</h1>
             </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -211,7 +218,7 @@ export default function AddProductsForm() {
                                     <FormLabel>Category</FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
+                                       
                                     >
                                         <FormControl>
                                             <SelectTrigger>
@@ -239,7 +246,7 @@ export default function AddProductsForm() {
                                     <FormLabel>Brand</FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
+                                       
                                     >
                                         <FormControl>
                                             <SelectTrigger>
@@ -375,7 +382,7 @@ export default function AddProductsForm() {
                         </div>
 
                         <div className="my-5">
-                            {featureFields.map((featureField,index)=><div key={featureField.id}>
+                            {featureFields.map((featureField, index) => <div key={featureField.id}>
                                 <FormField
                                     control={form.control}
                                     name={`keyFeatures.${index}.value`}
@@ -442,7 +449,7 @@ export default function AddProductsForm() {
                     </div>
 
                     <Button type="submit" className="mt-5 w-full" disabled={isSubmitting}>
-                        {isSubmitting ? "Adding Product....." : "Add Product"}
+                        {isSubmitting ? "updating Product....." : "Update Product"}
                     </Button>
                 </form>
             </Form>
