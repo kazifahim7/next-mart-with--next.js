@@ -43,7 +43,7 @@ export default function Navbar() {
         <header className="border-b w-full">
             <div className="container flex justify-between items-center mx-auto h-16 px-3">
                 <h1 className="text-2xl font-black flex items-center">
-                    <Image height={100} width={100} src={'https://i.postimg.cc/8PyDSXvq/Frame-2087325767.png'} alt="image" ></Image>
+                    <Link href={'/'}><Image height={100} width={100} src={'https://i.postimg.cc/8PyDSXvq/Frame-2087325767.png'} alt="image" ></Image></Link>
                 </h1>
                 <div className="max-w-md  flex-grow">
                     <input
@@ -56,9 +56,9 @@ export default function Navbar() {
                     <Button variant="outline" className="rounded-full p-0 size-10">
                         <Heart />
                     </Button>
-                    <Button variant="outline" className="rounded-full p-0 size-10">
+                    <Link href={'/cart'}> <Button variant="outline" className="rounded-full p-0 size-10">
                         <ShoppingBag />
-                    </Button>
+                    </Button></Link>
 
 
                     {user ? <>

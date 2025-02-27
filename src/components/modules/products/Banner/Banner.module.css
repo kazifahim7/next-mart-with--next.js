@@ -1,0 +1,7 @@
+.banner {
+    background: url('../../../../app/assets/product-banner.png');
+    height: 300px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
